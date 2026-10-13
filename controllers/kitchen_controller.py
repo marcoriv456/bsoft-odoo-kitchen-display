@@ -20,7 +20,8 @@ class BsoftKitchenController(http.Controller):
         ]
         if station_id:
             domain.append(("station_id", "=", int(station_id)))
-        tickets = request.env["bsoft.kitchen.ticket"].sudo().search(domain, order="ordered_at desc, id desc", limit=300)
+        # Oldest tickets first: the board grows downward as new work arrives.
+        tickets = request.env["bsoft.kitchen.ticket"].sudo().search(domain, order="ordered_at asc, id asc", limit=300)
         rows = []
         for ticket in tickets:
             order = ticket.order_id
