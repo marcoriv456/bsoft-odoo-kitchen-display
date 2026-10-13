@@ -2,3 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_station_cook,station cook,model_bsoft_kitchen_station,bsoft_kitchen_display.group_kitchen_cook,1,0,0,0
 access_station_manager,station manager,model_bsoft_kitchen_station,bsoft_kitchen_display.group_kitchen_manager,1,1,1,0
 access_station_admin,station admin,model_bsoft_kitchen_station,bsoft_kitchen_display.group_kitchen_admin,1,1,1,1
+access_ticket_cook,kitchen ticket cook,model_bsoft_kitchen_ticket,bsoft_kitchen_display.group_kitchen_cook,1,0,0,0
+access_ticket_manager,kitchen ticket manager,model_bsoft_kitchen_ticket,bsoft_kitchen_display.group_kitchen_manager,1,0,0,0
+access_ticket_admin,kitchen ticket admin,model_bsoft_kitchen_ticket,bsoft_kitchen_display.group_kitchen_admin,1,0,0,0

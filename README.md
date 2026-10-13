@@ -2,6 +2,30 @@
 
 Módulo original para pantalla Kanban de cocina con estaciones, filtros por categoría/POS, estados por línea, cronómetro, alertas visuales y grupos de seguridad.
 
+## Cómo se conserva el trabajo de cocina
+
+La pantalla usa `bsoft.kitchen.ticket` como su fuente de datos. Un ticket es
+una unidad persistente de trabajo de cocina: conserva el producto, cantidad,
+nota, estación y estado aun cuando el TPV vuelva a guardar la orden. Se enlaza
+con la orden POS y con el `uuid` estable de la línea que envía el TPV.
+
+Esto es importante porque Odoo elimina y recrea las filas `pos.order.line` al
+actualizar una orden de restaurante abierta. Después de cada sincronización
+POS, el módulo compara las líneas actuales contra los tickets ya registrados:
+
+- La misma línea y cantidad no crea otro ticket.
+- Una línea nueva crea un ticket nuevo.
+- Si aumenta la cantidad de una línea existente, sólo se crea un ticket por la
+  diferencia.
+- Si se reduce o elimina una línea antes de iniciarla, se ajusta o cancela el
+  ticket pendiente correspondiente.
+- Un producto sustituido cancela su trabajo aún pendiente y genera trabajo para
+  el producto nuevo; los tickets entregados quedan como historial.
+
+Los campos `kitchen_*` que existen en `pos.order.line` se conservan sólo para
+compatibilidad con instalaciones anteriores. La pantalla y sus transiciones ya
+no dependen de ellos.
+
 ## Instalación en Ubuntu
 Ejemplo: addons personalizados en `/opt/odoo/custom-addons`. Ajusta la ruta a tu instalación real.
 
@@ -28,6 +52,8 @@ En Odoo: activa modo desarrollador → Apps → Actualizar lista → busca “BS
 1. Crea categorías de TPV para cocina y bebidas; crea estaciones coincidentes.
 2. Crea pedidos desde una sesión de TPV de prueba y confirma la asignación de líneas.
 3. Comprueba el flujo Pendiente → Preparando → Listo → Entregado.
+4. En una orden abierta, entrega un producto, agrega otro producto desde el
+   TPV y vuelve a guardar: la pantalla debe mostrar sólo el producto agregado.
 4. Abre dos pantallas y verifica que los cambios se reflejen en ambas.
 5. Prueba los límites de advertencia y crítico.
 6. Prueba permisos de cada grupo.

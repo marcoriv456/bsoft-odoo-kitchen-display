@@ -1,7 +1,7 @@
 {
     "name": "BSOFT Kitchen Display",
     "summary": "Pantalla de cocina Kanban para Odoo 17 Community",
-    "version": "17.0.1.0.0",
+    "version": "17.0.2.0.0",
     "category": "Point of Sale",
     "author": "BSOFT Consulting",
     "website": "https://www.bsoftconsulting.com.mx",
@@ -21,5 +21,6 @@
         ]
     },
     "installable": True,
-    "application": True
+    "application": True,
+    "post_init_hook": "post_init_hook",
 }
