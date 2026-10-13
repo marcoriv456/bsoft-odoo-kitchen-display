@@ -1,0 +1,195 @@
+
+<templates xml:space="preserve">
+    <t t-name="bsoft_kitchen_display.KitchenDisplay" owl="1">
+
+        <div class="o_bsoft_kitchen">
+
+            <!-- Encabezado -->
+            <header class="o_bsoft_kitchen_header">
+
+                <div class="o_bsoft_kitchen_brand">
+                    <h1>BSOFT Kitchen Display</h1>
+                    <span class="text-muted">
+                        Pedidos de cocina en vivo
+                    </span>
+                </div>
+
+                <!-- Filtro por estación -->
+                <div class="o_bsoft_kitchen_controls">
+
+                    <label for="bsoft_station_filter">
+                        Estación
+                    </label>
+
+                    <select
+                        id="bsoft_station_filter"
+                        class="form-select"
+                        t-att-value="state.stationId"
+                        t-on-change="setStation">
+
+                        <option value="all">
+                            Todas las estaciones
+                        </option>
+
+                        <t
+                            t-foreach="state.stations"
+                            t-as="s"
+                            t-key="s.id">
+
+                            <option t-att-value="s.id">
+                                <t t-esc="s.name"/>
+                            </option>
+
+                        </t>
+                    </select>
+
+                </div>
+            </header>
+
+            <!-- Mensajes de error -->
+            <div
+                t-if="state.error"
+                class="alert alert-danger o_bsoft_error"
+                role="alert">
+
+                <t t-esc="state.error"/>
+            </div>
+
+            <!-- Carga inicial -->
+            <div
+                t-if="state.loading"
+                class="o_bsoft_loading">
+
+                Cargando pedidos…
+            </div>
+
+            <!-- Tablero de pedidos -->
+            <div
+                t-else=""
+                class="o_bsoft_kitchen_board">
+
+                <t
+                    t-foreach="['new', 'preparing', 'ready']"
+                    t-as="col"
+                    t-key="col">
+
+                    <section
+                        t-att-class="'o_bsoft_kitchen_column o_bsoft_column_' + col">
+
+                        <!-- Título y contador -->
+                        <header class="o_bsoft_column_header">
+
+                            <h2>
+                                <t t-esc="label(col)"/>
+                            </h2>
+
+                            <span class="o_bsoft_count">
+                                <t
+                                    t-esc="state.lines.filter(l => l.state === col).length"/>
+                            </span>
+
+                        </header>
+
+                        <!-- Pedidos de la columna -->
+                        <t
+                            t-set="items"
+                            t-value="state.lines.filter(l => l.state === col)"/>
+
+                        <!-- Columna vacía -->
+                        <div
+                            t-if="!items.length"
+                            class="o_bsoft_empty">
+
+                            <span>Sin pedidos</span>
+                        </div>
+
+                        <!-- Tarjetas -->
+                        <t
+                            t-foreach="items"
+                            t-as="line"
+                            t-key="line.id">
+
+                            <article
+                                t-att-class="'o_bsoft_ticket ' + ageClass(line)">
+
+                                <!-- Número de orden y tiempo -->
+                                <div class="o_bsoft_ticket_top">
+
+                                    <strong class="o_bsoft_order_name">
+                                        <t t-esc="line.order_name"/>
+                                    </strong>
+
+                                    <span class="o_bsoft_timer">
+                                        <t t-esc="elapsed(line)"/>
+                                    </span>
+
+                                </div>
+
+                                <!-- Mesa y estación -->
+                                <div class="o_bsoft_ticket_meta">
+
+                                    <span t-if="line.table">
+                                        Mesa
+                                        <t t-esc="line.table"/>
+                                    </span>
+
+                                    <span
+                                        t-if="line.station_name"
+                                        class="o_bsoft_station">
+
+                                        <t t-esc="line.station_name"/>
+                                    </span>
+
+                                </div>
+
+                                <!-- Producto y cantidad -->
+                                <div class="o_bsoft_product">
+
+                                    <span class="o_bsoft_qty">
+                                        <t t-esc="line.qty"/>×
+                                    </span>
+
+                                    <span class="o_bsoft_product_name">
+                                        <t t-esc="line.product"/>
+                                    </span>
+
+                                </div>
+
+                                <!-- Notas del pedido -->
+                                <div
+                                    t-if="line.note"
+                                    class="o_bsoft_note">
+
+                                    <strong>Nota:</strong>
+                                    <t t-esc="line.note"/>
+
+                                </div>
+
+                                <!-- Acción de cambio de estado -->
+                                <button
+                                    type="button"
+                                    t-att-class="'btn o_bsoft_action ' + (col === 'new' ? 'btn-primary' : (col === 'preparing' ? 'btn-success' : 'btn-secondary'))"
+                                    t-att-disabled="isUpdating(line)"
+                                    t-on-click="() => this.changeState(line)">
+
+                                    <t t-if="isUpdating(line)">
+                                        Actualizando…
+                                    </t>
+
+                                    <t t-else="">
+                                        <t t-esc="button(col)"/>
+                                    </t>
+
+                                </button>
+
+                            </article>
+
+                        </t>
+                    </section>
+
+                </t>
+            </div>
+        </div>
+
+    </t>
+</templates>
